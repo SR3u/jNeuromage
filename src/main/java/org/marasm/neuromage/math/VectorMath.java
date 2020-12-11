@@ -6,7 +6,7 @@ public interface VectorMath<V extends Vector> {
     V vector(double... array);
 
     default V convert(Vector v) {
-        return vector(v.data());
+        return vector(v.calculate().data());
     }
 
     V add(V a, V b); // returns V X: Xi = Ai + Bi
@@ -45,4 +45,7 @@ public interface VectorMath<V extends Vector> {
         return div(1, add(1, exp(x)));
     }
 
+    default Matrix<V> matrix(double[][] data, int rows, int columns) {
+        return new Matrix<>(this, data, rows, columns);
+    }
 }

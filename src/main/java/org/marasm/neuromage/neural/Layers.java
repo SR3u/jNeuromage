@@ -11,10 +11,10 @@ public class Layers<V extends Vector> {
     }
 
     public Layer<V> sigmoid(int size, int inputSize) {
-        return new Layer<>(math, size, inputSize, (n, in) -> 1 / (1 + Math.exp(math.sum(math.mul(in, n.getWeighs())))));
+        return new Layer<>(math, size, inputSize, (n, in) -> 1 / (1 + Math.exp(math.sum(math.mul(in, n)))));
     }
 
     public Layer<V> sum(int size, int inputSize) {
-        return new Layer<>(math, size, inputSize, (n, in) -> math.sum(math.mul(in, n.getWeighs())));
+        return new Layer<>(math, size, inputSize, (n, in) -> math.sum(math.mul(in, n)));
     }
 }

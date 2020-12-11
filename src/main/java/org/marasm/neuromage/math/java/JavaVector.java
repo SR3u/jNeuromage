@@ -1,10 +1,10 @@
 package org.marasm.neuromage.math.java;
 
-import org.marasm.neuromage.math.Vector;
+import org.marasm.neuromage.math.CalculatedVector;
 
 import java.util.Arrays;
 
-public class JavaVector implements Vector {
+public class JavaVector implements CalculatedVector {
     private double[] array;
 
     public JavaVector(double[] array) {

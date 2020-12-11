@@ -17,18 +17,12 @@ public class Main {
         Layers<JavaVector> layers = new Layers<>(math);
         NeuralNetwork<JavaVector> neuralNetwork = new NeuralNetwork<>(
                 layers.sum(3, 2),
-                layers.sigmoid(128, 3),
-                layers.sigmoid(1024, 128),
-                layers.sigmoid(1024, 1024),
-                layers.sigmoid(1024, 1024),
-                layers.sigmoid(1024, 1024),
-                layers.sigmoid(1024, 1024),
-                layers.sigmoid(1024, 1024),
-                layers.sigmoid(1024, 1024),
-                layers.sigmoid(1024, 1024),
-                layers.sigmoid(1024, 1024),
-                layers.sigmoid(128, 1024),
-                layers.sigmoid(2, 128)
+                layers.sigmoid(128, 3).learning(),
+                layers.sigmoid(1024, 128).learning(),
+                layers.sigmoid(1024, 1024).learning(),
+                layers.sigmoid(1024, 1024).learning(),
+                layers.sigmoid(128, 1024).learning(),
+                layers.sigmoid(2, 128).learning()
         );
         long time = benchmark(math, neuralNetwork);
         System.out.println(time + "ms");
