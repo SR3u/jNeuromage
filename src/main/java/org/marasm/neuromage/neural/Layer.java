@@ -39,4 +39,7 @@ public class Layer<V extends Vector> {
                 .mapToDouble(n -> activationFunc.applyAsDouble(n, input)).toArray());
     }
 
+    public long getNeuronsCount() {
+        return neurons.size();
+    }
 }

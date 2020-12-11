@@ -23,4 +23,11 @@ public class NeuralNetwork<V extends Vector> {
         }
         return input;
     }
+
+    public NeuralNetworkSummary summary() {
+        return NeuralNetworkSummary.builder()
+                .layers(layers.size())
+                .neurons(layers.stream().mapToLong(Layer::getNeuronsCount).sum())
+                .build();
+    }
 }

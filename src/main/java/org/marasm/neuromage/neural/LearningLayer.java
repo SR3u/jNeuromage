@@ -17,7 +17,7 @@ public class LearningLayer<V extends Vector> extends Layer<V> {
     //calculating error for learning using back propagation
     public void calculateError(V expectedOutput) {
         //delta = output * (1 - output) * (expectedOutput - output);
-        delta = math.mul(output, math.mul(math.sub(1, output), math.sub(expectedOutput, output)))
+        delta = math.mul(output, math.mul(math.sub(1, output), math.sub(expectedOutput, output)));
     }
 
     public void calculateError(Layer<V> nextLayer, int currentNeuronNumber) {
