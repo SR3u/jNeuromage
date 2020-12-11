@@ -107,7 +107,7 @@ public class JavaVectorMath implements VectorMath<JavaVector> {
         return new JavaVector(a.size());
     }
 
-    private void loop(JavaVector r, Jop op) {
+    private void loop(JavaVector r, Op op) {
         for (int i = 0; i < r.size(); i++) {
             r.set(i, op.apply(i));
         }
