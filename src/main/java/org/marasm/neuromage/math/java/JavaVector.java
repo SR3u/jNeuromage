@@ -48,4 +48,8 @@ public class JavaVector implements Vector {
         return Arrays.toString(array);
     }
 
+    @Override
+    public double[] data() {
+        return array;
+    }
 }

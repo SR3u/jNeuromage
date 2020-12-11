@@ -5,6 +5,10 @@ public interface VectorMath<V extends Vector> {
 
     V vector(double... array);
 
+    default V convert(Vector v) {
+        return vector(v.data());
+    }
+
     V add(V a, V b); // returns V X: Xi = Ai + Bi
 
     V sub(V a, V b); // returns V X: Xi = Ai - Bi

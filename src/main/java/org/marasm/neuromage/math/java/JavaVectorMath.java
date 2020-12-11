@@ -1,14 +1,24 @@
 package org.marasm.neuromage.math.java;
 
 import org.jetbrains.annotations.NotNull;
+import org.marasm.neuromage.math.Vector;
 import org.marasm.neuromage.math.VectorMath;
 
 import java.util.Arrays;
 
 public class JavaVectorMath implements VectorMath<JavaVector> {
+
     @Override
     public JavaVector vector(double... array) {
         return new JavaVector(array);
+    }
+
+    @Override
+    public JavaVector convert(Vector v) {
+        if (v instanceof JavaVector) {
+            return (JavaVector) v;
+        }
+        return VectorMath.super.convert(v);
     }
 
     @Override
