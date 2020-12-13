@@ -1,6 +1,7 @@
 package org.marasm.neuromage.math.java;
 
 import org.marasm.neuromage.math.CalculatedVector;
+import org.marasm.neuromage.math.Vector;
 
 import java.util.Arrays;
 
@@ -20,6 +21,11 @@ public class JavaVector implements CalculatedVector {
         for (int i = 0; i < size; i++) {
             array[i] = fill;
         }
+    }
+
+    @Override
+    public Vector copy() {
+        return new JavaVector(array);
     }
 
     public int size() {

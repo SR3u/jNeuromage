@@ -69,4 +69,19 @@ public class Matrix {
         List<Vector> data = rows.stream().map(v -> math.add(v, d)).collect(Collectors.toList());
         return new Matrix(math, data, c, r);
     }
+
+    public Matrix add(Matrix m) {
+        assertEqualSize(this, m);
+        List<Vector> rs = new ArrayList<>(rows.size());
+        for (int i = 0; i < rows.size(); i++) {
+            rs.add(math.add(rows.get(i), m.rows.get(i)));
+        }
+        return new Matrix(math, rs, r, c);
+    }
+
+    private static void assertEqualSize(Matrix a, Matrix b) {
+        if (!(a.r == b.r) || !(a.c == b.c)) {
+            throw new IllegalArgumentException("Matrix sizes are different!");
+        }
+    }
 }

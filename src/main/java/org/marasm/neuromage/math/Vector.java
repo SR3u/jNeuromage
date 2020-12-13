@@ -5,4 +5,7 @@ public interface Vector {
 
     CalculatedVector calculate();
 
+    Vector copy();
+
+    int size();
 }

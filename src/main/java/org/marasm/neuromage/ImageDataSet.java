@@ -31,7 +31,7 @@ public class ImageDataSet extends DataSet {
             for (int x = 0; x < image.getWidth(); x++) {
                 int clr = image.getRGB(x, y);
                 Color color = new Color(clr);
-                outputs.add(math.vector(color.getRed(), color.getGreen(), color.getBlue()));
+                outputs.add(math.vector(color.getRed() / 255.0, color.getGreen() / 255.0, color.getBlue() / 255.0));
             }
         }
         List<Vector> inputs = IntStream.range(0, image.getHeight())

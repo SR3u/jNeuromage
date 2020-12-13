@@ -50,8 +50,8 @@ public class LearningLayer extends Layer {
 
     public void learn(double rate) {
         //newW_i = oldW_i + LR*error*input_i
-        Vector d = math.mul(math.mul(rate, input), delta);
-        neurons = neurons.add(d);
+        Matrix cross = math.cross(math.mul(rate, input), delta);
+        neurons = neurons.add(cross);
     }
 
 }

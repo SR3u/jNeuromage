@@ -33,6 +33,11 @@ public class JoclVector implements Vector {
         return new JoclCalculatedVector(buffer);
     }
 
+    @Override
+    public Vector copy() {
+        return new JoclVector(buffer.array());
+    }
+
     public int size() {
         return size;
     }

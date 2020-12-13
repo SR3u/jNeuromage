@@ -63,4 +63,13 @@ public interface VectorMath {
         return new Matrix(this, rows, columns);
     }
 
+    default Matrix cross(Vector a, Vector b) {
+        double[][] data = new double[b.size()][];
+        double[] B = b.calculate().data();
+        for (int i = 0; i < B.length; i++) {
+            data[i] = mul(a, B[i]).calculate().data();
+        }
+        return matrix(data, b.size(), a.size());
+    }
+
 }
