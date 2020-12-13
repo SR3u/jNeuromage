@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Matrix<V extends Vector> {
-    private final VectorMath<V> math;
-    List<V> rows;
+public class Matrix {
+    private final VectorMath math;
+    List<Vector> rows;
     final int r;
     final int c;
 
-    public Matrix(VectorMath<V> math, int rows, int columns) {
+    public Matrix(VectorMath math, int rows, int columns) {
         this.math = math;
         this.r = rows;
         this.c = columns;
@@ -22,12 +22,12 @@ public class Matrix<V extends Vector> {
         }
     }
 
-    public Matrix(VectorMath<V> math, double[][] data, int r, int c) {
+    public Matrix(VectorMath math, double[][] data, int r, int c) {
         this(math, Arrays.stream(data).map(math::vector).collect(Collectors.toList()), r, c);
 
     }
 
-    public Matrix(VectorMath<V> math, List<V> data, int r, int c) {
+    public Matrix(VectorMath math, List<Vector> data, int r, int c) {
         this.math = math;
         this.r = r;
         this.c = c;
@@ -37,7 +37,7 @@ public class Matrix<V extends Vector> {
         }
     }
 
-    public Matrix<V> transpose() {
+    public Matrix transpose() {
         double[][] data = new double[r][c];
         for (int i = 0; i < rows.size(); i++) {
             double[] row = rows.get(i).calculate().data();
@@ -45,10 +45,10 @@ public class Matrix<V extends Vector> {
                 data[j][i] = row[j];
             }
         }
-        return new Matrix<>(math, data, c, r);
+        return new Matrix(math, data, c, r);
     }
 
-    public Stream<V> stream() {
+    public Stream<Vector> stream() {
         return rows.stream();
     }
 
@@ -56,17 +56,17 @@ public class Matrix<V extends Vector> {
         return r;
     }
 
-    public Matrix<V> mul(V v) {
-        List<V> data = rows.stream().map(r -> math.mul(r, v)).collect(Collectors.toList());
-        return new Matrix<V>(math, data, r, c);
+    public Matrix mul(Vector v) {
+        List<Vector> data = rows.stream().map(r -> math.mul(r, v)).collect(Collectors.toList());
+        return new Matrix(math, data, r, c);
     }
 
-    public V sumRows() {
+    public Vector sumRows() {
         return math.vector(rows.stream().mapToDouble(math::sum).toArray());
     }
 
-    public Matrix<V> add(V d) {
-        List<V> data = rows.stream().map(v -> math.add(v, d)).collect(Collectors.toList());
-        return new Matrix<>(math, data, c, r);
+    public Matrix add(Vector d) {
+        List<Vector> data = rows.stream().map(v -> math.add(v, d)).collect(Collectors.toList());
+        return new Matrix(math, data, c, r);
     }
 }

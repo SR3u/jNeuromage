@@ -6,15 +6,15 @@ import org.marasm.neuromage.math.VectorMath;
 
 import java.util.function.ToDoubleBiFunction;
 
-public class Layer<V extends Vector> {
+public class Layer {
 
-    protected final VectorMath<V> math;
+    protected final VectorMath math;
     private final int inputSize;
     private final int size;
-    protected Matrix<V> neurons;
-    private final ToDoubleBiFunction<V, V> activationFunc;
+    protected Matrix neurons;
+    private final ToDoubleBiFunction<Vector, Vector> activationFunc;
 
-    protected Layer(VectorMath<V> math, int size, int inputSize, ToDoubleBiFunction<V, V> activationFunc) {
+    protected Layer(VectorMath math, int size, int inputSize, ToDoubleBiFunction<Vector, Vector> activationFunc) {
         this.math = math;
         this.activationFunc = activationFunc;
         this.size = size;
@@ -27,7 +27,7 @@ public class Layer<V extends Vector> {
         neurons = math.matrix(weights, size, inputSize);
     }
 
-    private V randomWeights(int inputSize) {
+    private Vector randomWeights(int inputSize) {
         double[] weights = new double[inputSize];
         for (int i = 0; i < weights.length; i++) {
             weights[i] = Math.random() * 100;
@@ -35,20 +35,21 @@ public class Layer<V extends Vector> {
         return math.vector(weights);
     }
 
-    public VectorMath<V> getMath() {
+    public VectorMath getMath() {
         return this.math;
     }
 
-    public V output(V input) {
+    public Vector output(Vector input) {
+        Vector inp = math.convert(input);
         return math.vector(neurons.stream()
-                .mapToDouble(n -> activationFunc.applyAsDouble(n, input)).toArray());
+                .mapToDouble(n -> activationFunc.applyAsDouble(n, inp)).toArray());
     }
 
     public long getNeuronsCount() {
         return neurons.rows();
     }
 
-    public LearningLayer<V> learning() {
-        return new LearningLayer<>(math, size, inputSize, activationFunc);
+    public LearningLayer learning() {
+        return new LearningLayer(math, size, inputSize, activationFunc);
     }
 }

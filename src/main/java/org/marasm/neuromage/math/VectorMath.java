@@ -1,51 +1,51 @@
 package org.marasm.neuromage.math;
 
 //Vectorized math interface
-public interface VectorMath<V extends Vector> {
+public interface VectorMath {
 
-    V vector(double... array);
+    Vector vector(double... array);
 
-    default V convert(Vector v) {
+    default Vector convert(Vector v) {
         return vector(v.calculate().data());
     }
 
-    V add(V a, V b); // returns V X: Xi = Ai + Bi
+    Vector add(Vector a, Vector b); // returns Vector X: Xi = Ai + Bi
 
-    V sub(V a, V b); // returns V X: Xi = Ai - Bi
+    Vector sub(Vector a, Vector b); // returns Vector X: Xi = Ai - Bi
 
-    V add(V a, double b); // returns V X: Xi = Ai + b
+    Vector add(Vector a, double b); // returns Vector X: Xi = Ai + b
 
-    default V add(double a, V b) { // returns V X: Xi = a +  Bi
+    default Vector add(double a, Vector b) { // returns Vector X: Xi = a +  Bi
         return add(b, a);
     }
 
-    V sub(V a, double b); // returns V X: Xi = Ai - b
+    Vector sub(Vector a, double b); // returns Vector X: Xi = Ai - b
 
-    V sub(double a, V b); // returns V X: Xi = a - Bi
+    Vector sub(double a, Vector b); // returns Vector X: Xi = a - Bi
 
-    V mul(V a, V b); // returns V X: Xi = Ai * Bi
+    Vector mul(Vector a, Vector b); // returns Vector X: Xi = Ai * Bi
 
-    V mul(V a, double b); // returns V X: Xi = Ai * b
+    Vector mul(Vector a, double b); // returns Vector X: Xi = Ai * b
 
-    default V mul(double a, V b) { // returns V X: Xi = a *  Bi
+    default Vector mul(double a, Vector b) { // returns Vector X: Xi = a *  Bi
         return mul(b, a);
     }
 
-    V div(V a, V b); // returns V X: Xi = Ai / Bi
+    Vector div(Vector a, Vector b); // returns Vector X: Xi = Ai / Bi
 
-    V div(double a, V b); // returns V X: Xi = a / Bi
+    Vector div(double a, Vector b); // returns Vector X: Xi = a / Bi
 
-    V div(V a, double b); // returns V X: Xi = Ai / b
+    Vector div(Vector a, double b); // returns Vector X: Xi = Ai / b
 
-    V exp(V a); // returns V X: Xi = Math.exp(Ai)
+    Vector exp(Vector a); // returns Vector X: Xi = Math.exp(Ai)
 
-    double sum(V a);
+    double sum(Vector a);
 
-    default V sigmoid(V x) { // returns V Y: 1 / (1 + Math.exp(Xi))
+    default Vector sigmoid(Vector x) { // returns Vector Y: 1 / (1 + Math.exp(Xi))
         return div(1, add(1, exp(x)));
     }
 
-    default Matrix<V> matrix(double[][] data, int rows, int columns) {
-        return new Matrix<>(this, data, rows, columns);
+    default Matrix matrix(double[][] data, int rows, int columns) {
+        return new Matrix(this, data, rows, columns);
     }
 }

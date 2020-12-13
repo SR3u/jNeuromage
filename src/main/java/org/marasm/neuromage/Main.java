@@ -2,8 +2,7 @@ package org.marasm.neuromage;
 
 import org.marasm.neuromage.math.Vector;
 import org.marasm.neuromage.math.VectorMath;
-import org.marasm.neuromage.math.java.JavaVector;
-import org.marasm.neuromage.math.java.JavaVectorMath;
+import org.marasm.neuromage.math.VectorMathBuilder;
 import org.marasm.neuromage.neural.Layers;
 import org.marasm.neuromage.neural.NeuralNetwork;
 
@@ -13,9 +12,9 @@ import java.util.Date;
 public class Main {
 
     public static void main(String[] args) throws IOException {
-        VectorMath<JavaVector> math = new JavaVectorMath();
-        Layers<JavaVector> layers = new Layers<>(math);
-        NeuralNetwork<JavaVector> neuralNetwork = new NeuralNetwork<>(
+        VectorMath math = VectorMathBuilder.get();
+        Layers layers = new Layers(math);
+        NeuralNetwork neuralNetwork = new NeuralNetwork(
                 layers.sum(3, 2),
                 layers.sigmoid(128, 3).learning(),
                 layers.sigmoid(1024, 128).learning(),
@@ -28,13 +27,13 @@ public class Main {
         System.out.println(time + "ms");
     }
 
-    private static long benchmark(VectorMath<JavaVector> math, NeuralNetwork<JavaVector> neuralNetwork) {
-        Vector output  = neuralNetwork.output(math.vector(1, 1));
+    private static long benchmark(VectorMath math, NeuralNetwork neuralNetwork) {
+        Vector output = neuralNetwork.output(math.vector(1, 1));
         long neurons = neuralNetwork.summary().getNeurons();
         System.out.println(neurons);
         long N = 10;
-        if(neurons < 10000){
-            N = neurons/3000;
+        if (neurons < 10000) {
+            N = neurons / 3000;
         }
         for (long i = 0; i < N; i++) { // waiting for JIT
             output = neuralNetwork.output(math.vector(1, 1));

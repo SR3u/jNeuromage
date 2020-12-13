@@ -6,7 +6,7 @@ import org.marasm.neuromage.math.VectorMath;
 
 import java.util.Arrays;
 
-public class JavaVectorMath implements VectorMath<JavaVector> {
+public class JavaVectorMath implements VectorMath {
 
     @Override
     public JavaVector vector(double... array) {
@@ -18,89 +18,105 @@ public class JavaVectorMath implements VectorMath<JavaVector> {
         if (v instanceof JavaVector) {
             return (JavaVector) v;
         }
-        return VectorMath.super.convert(v);
+        return vector(v.calculate().data());
     }
 
     @Override
-    public JavaVector add(JavaVector a, JavaVector b) {
-        JavaVector r = createResultVector(a, b);
-        loop(r, (i) -> a.get(i) + b.get(i));
+    public Vector add(Vector a, Vector b) {
+        JavaVector A = convert(a);
+        JavaVector B = convert(b);
+        JavaVector r = createResultVector(A, B);
+        loop(r, (i) -> A.get(i) + B.get(i));
         return r;
     }
 
     @Override
-    public JavaVector sub(JavaVector a, JavaVector b) {
-        JavaVector r = createResultVector(a, b);
-        loop(r, (i) -> a.get(i) - b.get(i));
+    public Vector sub(Vector a, Vector b) {
+        JavaVector A = convert(a);
+        JavaVector B = convert(b);
+        JavaVector r = createResultVector(A, B);
+        loop(r, (i) -> A.get(i) - B.get(i));
         return r;
     }
 
     @Override
-    public JavaVector add(JavaVector a, double b) {
-        JavaVector r = createResultVector(a);
-        loop(r, (i) -> a.get(i) + b);
+    public Vector add(Vector a, double b) {
+        JavaVector A = convert(a);
+        JavaVector r = createResultVector(A);
+        loop(r, (i) -> A.get(i) + b);
         return r;
     }
 
     @Override
-    public JavaVector sub(JavaVector a, double b) {
-        JavaVector r = createResultVector(a);
-        loop(r, (i) -> a.get(i) - b);
+    public Vector sub(Vector a, double b) {
+        JavaVector A = convert(a);
+        JavaVector r = createResultVector(A);
+        loop(r, (i) -> A.get(i) - b);
         return r;
     }
 
     @Override
-    public JavaVector sub(double a, JavaVector b) {
-        JavaVector r = createResultVector(b);
-        loop(r, (i) -> a - b.get(i));
+    public Vector sub(double a, Vector b) {
+        JavaVector B = convert(b);
+        JavaVector r = createResultVector(B);
+        loop(r, (i) -> a - B.get(i));
         return r;
     }
 
     @Override
-    public JavaVector mul(JavaVector a, JavaVector b) {
-        JavaVector r = createResultVector(a, b);
-        loop(r, (i) -> a.get(i) * b.get(i));
+    public Vector mul(Vector a, Vector b) {
+        JavaVector A = convert(a);
+        JavaVector B = convert(b);
+        JavaVector r = createResultVector(A, B);
+        loop(r, (i) -> A.get(i) * B.get(i));
         return r;
     }
 
     @Override
-    public JavaVector mul(JavaVector a, double b) {
-        JavaVector r = createResultVector(a);
-        loop(r, (i) -> a.get(i) * b);
+    public Vector mul(Vector a, double b) {
+        JavaVector A = convert(a);
+        JavaVector r = createResultVector(A);
+        loop(r, (i) -> A.get(i) * b);
         return r;
     }
 
     @Override
-    public JavaVector div(JavaVector a, JavaVector b) {
-        JavaVector r = createResultVector(a, b);
-        loop(r, (i) -> a.get(i) / b.get(i));
+    public Vector div(Vector a, Vector b) {
+        JavaVector A = convert(a);
+        JavaVector B = convert(b);
+        JavaVector r = createResultVector(A, B);
+        loop(r, (i) -> A.get(i) / B.get(i));
         return r;
     }
 
     @Override
-    public JavaVector div(double a, JavaVector b) {
-        JavaVector r = createResultVector(b);
-        loop(r, (i) -> a / b.get(i));
+    public Vector div(double a, Vector b) {
+        JavaVector B = convert(b);
+        JavaVector r = createResultVector(B);
+        loop(r, (i) -> a / B.get(i));
         return r;
     }
 
     @Override
-    public JavaVector div(JavaVector a, double b) {
-        JavaVector r = createResultVector(a);
-        loop(r, (i) -> a.get(i) / b);
+    public Vector div(Vector a, double b) {
+        JavaVector A = convert(a);
+        JavaVector r = createResultVector(A);
+        loop(r, (i) -> A.get(i) / b);
         return r;
     }
 
     @Override
-    public JavaVector exp(JavaVector a) {
-        JavaVector r = createResultVector(a);
-        loop(r, (i) -> Math.exp(a.get(i)));
+    public JavaVector exp(Vector a) {
+        JavaVector A = convert(a);
+        JavaVector r = createResultVector(A);
+        loop(r, (i) -> Math.exp(A.get(i)));
         return r;
     }
 
     @Override
-    public double sum(JavaVector a) {
-        return Arrays.stream(a.get()).sum();
+    public double sum(Vector a) {
+        JavaVector A = convert(a);
+        return Arrays.stream(A.get()).sum();
     }
 
     private JavaVector createResultVector(JavaVector a) {
