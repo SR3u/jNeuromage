@@ -38,7 +38,7 @@ public class Matrix {
     }
 
     public Matrix transpose() {
-        double[][] data = new double[r][c];
+        double[][] data = new double[c][r];
         for (int i = 0; i < rows.size(); i++) {
             double[] row = rows.get(i).calculate().data();
             for (int j = 0; j < row.length; j++) {

@@ -24,7 +24,7 @@ public class Layer {
             double[] e = randomWeights(inputSize).calculate().data();
             weights[i] = e;
         }
-        neurons = math.matrix(weights, size, inputSize);
+        neurons = math.matrix(size, inputSize);
     }
 
     private Vector randomWeights(int inputSize) {

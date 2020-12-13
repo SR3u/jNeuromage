@@ -1,9 +1,19 @@
 package org.marasm.neuromage.math;
 
+import java.util.stream.IntStream;
+
 //Vectorized math interface
 public interface VectorMath {
 
+    static VectorMath get() {
+        return VectorMathBuilder.get();
+    }
+
     Vector vector(double... array);
+
+    default Vector vector(int size, double fill) {
+        return vector(IntStream.range(0, size).mapToDouble(i -> fill).toArray());
+    }
 
     default Vector convert(Vector v) {
         return vector(v.calculate().data());
@@ -48,4 +58,9 @@ public interface VectorMath {
     default Matrix matrix(double[][] data, int rows, int columns) {
         return new Matrix(this, data, rows, columns);
     }
+
+    default Matrix matrix(int rows, int columns) {
+        return new Matrix(this, rows, columns);
+    }
+
 }

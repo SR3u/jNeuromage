@@ -14,6 +14,7 @@ public class LearningLayer extends Layer {
     protected LearningLayer(VectorMath math, int size, int inputSize,
                             ToDoubleBiFunction<Vector, Vector> activationFunc) {
         super(math, size, inputSize, activationFunc);
+        delta = math.vector(size, 0);
     }
 
     @Override
@@ -29,11 +30,12 @@ public class LearningLayer extends Layer {
         delta = math.mul(output, math.mul(math.sub(1, output), math.sub(expectedOutput, output)));
     }
 
-    public void calculateError(LearningLayer nextLayer, int currentNeuronNumber) {
+    public void calculateError(LearningLayer nextLayer) {
         //for calculating the error for hidden neurons use the values of errors of next layer
         //error_i = OUTi*(1 - OUTi)*(sum_children)
         //sum_children = summary (weights(i->j)*error_j), j - all neurons of the next layer
-        Vector sum = nextLayer.getNeurons().transpose().mul(delta).sumRows();
+        Matrix nextLayerNeurons = nextLayer.getNeurons();
+        Vector sum = nextLayerNeurons.transpose().mul(nextLayer.getDelta()).sumRows();
         delta = math.mul(math.mul(output, math.sub(1, output)), sum);
     }
 

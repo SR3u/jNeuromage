@@ -5,6 +5,7 @@ import org.marasm.neuromage.math.Vector;
 import org.marasm.neuromage.math.VectorMath;
 
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 public class JavaVectorMath implements VectorMath {
 
@@ -124,9 +125,11 @@ public class JavaVectorMath implements VectorMath {
     }
 
     private void loop(JavaVector r, Op op) {
-        for (int i = 0; i < r.size(); i++) {
-            r.set(i, op.apply(i));
+        IntStream range = IntStream.range(0, r.size());
+        if (r.size() > 20000) {
+            range = range.parallel();
         }
+        range.forEach(i -> r.set(i, op.apply(i)));
     }
 
     @NotNull
@@ -138,8 +141,8 @@ public class JavaVectorMath implements VectorMath {
     private void assertEqualSize(JavaVector a, JavaVector b) {
         if (a.size() != b.size()) {
             try {
-                throw new IllegalAccessException("Expected equal sized vectors!");
-            } catch (IllegalAccessException e) {
+                throw new IllegalArgumentException("Expected equal sized vectors!");
+            } catch (IllegalArgumentException e) {
                 throw new RuntimeException(e);
             }
         }
