@@ -2,18 +2,16 @@ package org.marasm.neuromage.neural;
 
 import org.marasm.neuromage.math.Matrix;
 import org.marasm.neuromage.math.Vector;
-import org.marasm.neuromage.math.VectorMath;
-
-import java.util.function.ToDoubleBiFunction;
 
 public class LearningLayer extends Layer {
     private Vector output;
     private Vector delta;
     private Vector input;
 
-    protected LearningLayer(VectorMath math, int size, int inputSize,
-                            ToDoubleBiFunction<Vector, Vector> activationFunc) {
-        super(math, size, inputSize, activationFunc);
+    protected LearningLayer(int size, int inputSize,
+                            ActivationFunction activationFunc, Matrix neurons) {
+        super(size, inputSize, activationFunc);
+        this.neurons = neurons;
         delta = math.vector(size, 0);
     }
 

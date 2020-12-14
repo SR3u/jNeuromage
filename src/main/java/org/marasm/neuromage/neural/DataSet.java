@@ -20,9 +20,13 @@ public class DataSet {
         return new DataSet(inputs, outputs);
     }
 
-    void forEach(BiConsumer<Vector, Vector> consumer) {
+    void forEach(IterationBiConsumer<Vector, Vector> consumer) {
         for (int i = 0; i < inputs.size(); i++) {
-            consumer.accept(inputs.get(i), outputs.get(i));
+            consumer.accept(i, inputs.size(), inputs.get(i), outputs.get(i));
         }
+    }
+
+    void forEach(BiConsumer<Vector, Vector> consumer) {
+        forEach((ignored1, ignored2, a, b) -> consumer.accept(a, b));
     }
 }

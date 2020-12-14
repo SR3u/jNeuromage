@@ -4,18 +4,17 @@ import org.marasm.neuromage.math.Matrix;
 import org.marasm.neuromage.math.Vector;
 import org.marasm.neuromage.math.VectorMath;
 
-import java.util.function.ToDoubleBiFunction;
+import java.io.Serializable;
 
-public class Layer {
+public class Layer implements Serializable {
 
-    protected final VectorMath math;
+    protected final static VectorMath math = VectorMath.get();
     private final int inputSize;
     private final int size;
     protected Matrix neurons;
-    private final ToDoubleBiFunction<Vector, Vector> activationFunc;
+    private final ActivationFunction activationFunc;
 
-    protected Layer(VectorMath math, int size, int inputSize, ToDoubleBiFunction<Vector, Vector> activationFunc) {
-        this.math = math;
+    protected Layer(int size, int inputSize, ActivationFunction activationFunc) {
         this.activationFunc = activationFunc;
         this.size = size;
         this.inputSize = inputSize;
@@ -36,7 +35,7 @@ public class Layer {
     }
 
     public VectorMath getMath() {
-        return this.math;
+        return math;
     }
 
     public Vector output(Vector input) {
@@ -50,6 +49,7 @@ public class Layer {
     }
 
     public LearningLayer learning() {
-        return new LearningLayer(math, size, inputSize, activationFunc);
+        return new LearningLayer(size, inputSize, activationFunc, neurons);
     }
+
 }

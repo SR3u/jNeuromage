@@ -6,7 +6,7 @@ import java.util.stream.IntStream;
 public interface VectorMath {
 
     static VectorMath get() {
-        return VectorMathBuilder.get();
+        return VectorMathHolder.get();
     }
 
     Vector vector(double... array);
@@ -60,7 +60,7 @@ public interface VectorMath {
     }
 
     default Matrix matrix(int rows, int columns) {
-        return new Matrix(this, rows, columns);
+        return new Matrix(rows, columns);
     }
 
     default Matrix cross(Vector a, Vector b) {

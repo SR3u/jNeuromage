@@ -1,38 +1,105 @@
 package org.marasm.neuromage;
 
+import org.jetbrains.annotations.NotNull;
+import org.marasm.neuromage.gui.ImageFrame;
 import org.marasm.neuromage.math.Vector;
 import org.marasm.neuromage.math.VectorMath;
-import org.marasm.neuromage.math.VectorMathBuilder;
 import org.marasm.neuromage.neural.DataSet;
 import org.marasm.neuromage.neural.Layers;
 import org.marasm.neuromage.neural.NeuralNetwork;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Main {
 
     public static void main(String[] args) throws IOException {
         Image ima = ImageIO.read(new File("Lenna.png"));
         DataSet dataSet = ImageDataSet.of(ima);
-        VectorMath math = VectorMathBuilder.get();
-        Layers layers = new Layers(math);
-        NeuralNetwork neuralNetwork = new NeuralNetwork(
-                layers.sum(2, 2),
-                layers.sigmoid(128, 2).learning(),
-                layers.sigmoid(1024, 128).learning(),
-                layers.sigmoid(1024, 1024).learning(),
-                layers.sigmoid(1024, 1024).learning(),
-                layers.sigmoid(128, 1024).learning(),
-                layers.sigmoid(3, 128).learning()
-        );
-        neuralNetwork.learn(3, 0.01, dataSet);
+
+        NeuralNetwork neuralNetwork = getNeuralNetwork();
+        //long start = new Date().getTime();
+        final long[] last = {0};
+        final int[] lastE = {0};
+        neuralNetwork.setHandler((e, i, t) -> {
+            if (e != lastE[0]) {
+                saveNeuralNetwork(neuralNetwork);
+                lastE[0] = e;
+            }
+            long current = new Date().getTime();
+            if (current - last[0] > 30000) {
+                System.out.println("Learning: epoch: " + e + " iteraion: " + i + "/" + t);
+                last[0] = current;
+            }
+        });
+        neuralNetwork.learn(10, 0.01, dataSet);
+        saveNeuralNetwork(neuralNetwork);
+
+        ImageDataSet processed = process(ima.getWidth(null), ima.getHeight(null), neuralNetwork);
+        imageFrame(ima, "Original");
+        BufferedImage out = processed.toImage();
+        imageFrame(out, "Processed");
 
         /*long time = benchmark(math, neuralNetwork);
         System.out.println(time + "ms");*/
+    }
+
+    @NotNull
+    private static NeuralNetwork getNeuralNetwork() {
+        try {
+            FileInputStream fi = new FileInputStream(new File("nn.nn"));
+            ObjectInputStream oi = new ObjectInputStream(fi);
+            return (NeuralNetwork) oi.readObject();
+        } catch (Exception e) {
+            VectorMath math = VectorMath.get();
+            NeuralNetwork neuralNetwork = new NeuralNetwork(
+                    Layers.sum(2, 2),
+                    Layers.sigmoid(128, 2).learning(),
+                    Layers.sigmoid(1024, 128).learning(),
+                    Layers.sigmoid(1024, 1024).learning(),
+                    Layers.sigmoid(128, 1024).learning(),
+                    Layers.sigmoid(3, 128).learning()
+            );
+            saveNeuralNetwork(neuralNetwork);
+            return neuralNetwork;
+        }
+    }
+
+    private static void saveNeuralNetwork(NeuralNetwork neuralNetwork) {
+        try {
+            FileOutputStream f = new FileOutputStream(new File("nn.nn"));
+            ObjectOutputStream o = new ObjectOutputStream(f);
+            o.writeObject(neuralNetwork);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static ImageDataSet process(int width, int height, NeuralNetwork neuralNetwork) {
+        VectorMath math = VectorMath.get();
+        List<Vector> inputs = IntStream.range(0, width)
+                .mapToDouble(i -> i)
+                .mapToObj(y -> IntStream.range(0, height)
+                        .mapToDouble(i -> i)
+                        .mapToObj(x -> math.vector(x, y)).collect(Collectors.toList()))
+                .flatMap(Collection::stream).collect(Collectors.toList());
+
+        List<Vector> outputs = new ArrayList<>(width * height);
+        inputs.forEach(i -> outputs.add(neuralNetwork.output(i)));
+        return ImageDataSet.of(width, height, inputs, outputs);
     }
 
     private static long benchmark(VectorMath math, NeuralNetwork neuralNetwork) {
@@ -55,11 +122,11 @@ public class Main {
         return (end - start) / N;
     }
 
-   /* @NotNull
+    @NotNull
     private static ImageFrame imageFrame(Image image, String title) {
         final ImageFrame current = new ImageFrame(title, image);
         current.setSize(192, 192);
         current.setVisible(true);
         return current;
-    }*/
+    }
 }

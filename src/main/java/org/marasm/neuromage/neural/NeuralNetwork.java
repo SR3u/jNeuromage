@@ -2,11 +2,18 @@ package org.marasm.neuromage.neural;
 
 import org.marasm.neuromage.math.Vector;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-public class NeuralNetwork {
+public class NeuralNetwork implements Serializable {
     private final List<Layer> layers;
+    private int epoch = 0;
+    private transient IntBiConsumer handler;
+
+    public void setHandler(IntBiConsumer handler) {
+        this.handler = handler;
+    }
 
     public NeuralNetwork(List<Layer> layers) {
         this.layers = layers;
@@ -24,11 +31,15 @@ public class NeuralNetwork {
     }
 
     public void learn(double rate, DataSet dataSet) {
-        dataSet.forEach((i, o) -> this.learnIteration(rate, i, o));
+        dataSet.forEach((i, t, in, out) -> {
+            this.learnIteration(rate, in, out);
+            handler.accept(epoch, i, t);
+        });
     }
 
     public void learn(int epochs, double rate, DataSet dataSet) {
         for (int i = 0; i < epochs; i++) {
+            epoch = i;
             learn(rate, dataSet);
         }
     }

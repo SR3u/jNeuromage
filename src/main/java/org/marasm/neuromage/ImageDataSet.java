@@ -2,7 +2,7 @@ package org.marasm.neuromage;
 
 import org.marasm.neuromage.math.Vector;
 import org.marasm.neuromage.math.VectorMath;
-import org.marasm.neuromage.math.VectorMathBuilder;
+import org.marasm.neuromage.math.VectorMathHolder;
 import org.marasm.neuromage.neural.DataSet;
 
 import java.awt.*;
@@ -15,17 +15,25 @@ import java.util.stream.IntStream;
 
 public class ImageDataSet extends DataSet {
 
-    private static final VectorMath math = VectorMathBuilder.get();
+    private static final VectorMath math = VectorMathHolder.get();
+
+    private Dimension size;
 
     protected ImageDataSet(List<Vector> inputs, List<Vector> outputs) {
         super(inputs, outputs);
     }
 
-    public static DataSet of(Image image) {
+    public static ImageDataSet of(int width, int height, List<Vector> inputs, List<Vector> outputs) {
+        ImageDataSet imageDataSet = new ImageDataSet(inputs, outputs);
+        imageDataSet.size = new Dimension(width, height);
+        return imageDataSet;
+    }
+
+    public static ImageDataSet of(Image image) {
         return of(buffer(image));
     }
 
-    public static DataSet of(BufferedImage image) {
+    public static ImageDataSet of(BufferedImage image) {
         List<Vector> outputs = new ArrayList<>(image.getHeight() * image.getWidth());
         for (int y = 0; y < image.getHeight(); y++) {
             for (int x = 0; x < image.getWidth(); x++) {
@@ -40,7 +48,20 @@ public class ImageDataSet extends DataSet {
                         .mapToDouble(i -> i)
                         .mapToObj(x -> math.vector(x, y)).collect(Collectors.toList()))
                 .flatMap(Collection::stream).collect(Collectors.toList());
-        return of(inputs, outputs);
+        return of(image.getWidth(), image.getHeight(), inputs, outputs);
+    }
+
+    public BufferedImage toImage() {
+        BufferedImage image = new BufferedImage((int) size.getWidth(), (int) size.getHeight(),
+                BufferedImage.TYPE_INT_RGB);
+        IntStream.range(0, getInputs().size())
+                .forEach(i -> {
+                    double[] in = getInputs().get(i).calculate().data();
+                    double[] out = getOutputs().get(i).calculate().data();
+                    image.setRGB((int) in[0], (int) in[1],
+                            new Color((int) out[0] * 255, (int) out[1] * 255, (int) out[2] * 255).getRGB());
+                });
+        return image;
     }
 
     private static BufferedImage buffer(Image img) {
