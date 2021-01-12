@@ -2,11 +2,11 @@ package org.marasm.neuromage;
 
 import org.jetbrains.annotations.NotNull;
 import org.marasm.neuromage.gui.ImageFrame;
-import org.marasm.neuromage.math.Vector;
-import org.marasm.neuromage.math.VectorMath;
 import org.marasm.neuromage.neural.DataSet;
 import org.marasm.neuromage.neural.Layers;
 import org.marasm.neuromage.neural.NeuralNetwork;
+import sr3u.jvec.JMath;
+import sr3u.jvec.Vector;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -60,18 +60,22 @@ public class Main {
     @NotNull
     private static NeuralNetwork getNeuralNetwork() {
         try {
-            FileInputStream fi = new FileInputStream(new File("nn.nn"));
+            FileInputStream fi = new FileInputStream("nn.nn");
             ObjectInputStream oi = new ObjectInputStream(fi);
             return (NeuralNetwork) oi.readObject();
         } catch (Exception e) {
-            VectorMath math = VectorMath.get();
-            NeuralNetwork neuralNetwork = new NeuralNetwork(
+           /* NeuralNetwork neuralNetwork = new NeuralNetwork(
                     Layers.sum(2, 2),
                     Layers.sigmoid(128, 2).learning(),
                     Layers.sigmoid(1024, 128).learning(),
                     Layers.sigmoid(1024, 1024).learning(),
                     Layers.sigmoid(128, 1024).learning(),
                     Layers.sigmoid(3, 128).learning()
+            );*/
+            NeuralNetwork neuralNetwork = new NeuralNetwork(
+                    Layers.sum(2, 2),
+                    Layers.sigmoid(4, 2).learning(),
+                    Layers.sigmoid(3, 4).learning()
             );
             saveNeuralNetwork(neuralNetwork);
             return neuralNetwork;
@@ -79,17 +83,17 @@ public class Main {
     }
 
     private static void saveNeuralNetwork(NeuralNetwork neuralNetwork) {
-        try {
+        /*try {
             FileOutputStream f = new FileOutputStream(new File("nn.nn"));
             ObjectOutputStream o = new ObjectOutputStream(f);
             o.writeObject(neuralNetwork);
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     private static ImageDataSet process(int width, int height, NeuralNetwork neuralNetwork) {
-        VectorMath math = VectorMath.get();
+        JMath math = JMath.get();
         List<Vector> inputs = IntStream.range(0, width)
                 .mapToDouble(i -> i)
                 .mapToObj(y -> IntStream.range(0, height)
@@ -102,7 +106,7 @@ public class Main {
         return ImageDataSet.of(width, height, inputs, outputs);
     }
 
-    private static long benchmark(VectorMath math, NeuralNetwork neuralNetwork) {
+    private static long benchmark(JMath math, NeuralNetwork neuralNetwork) {
         Vector output = neuralNetwork.output(math.vector(1, 1));
         long neurons = neuralNetwork.summary().getNeurons();
         System.out.println(neurons);

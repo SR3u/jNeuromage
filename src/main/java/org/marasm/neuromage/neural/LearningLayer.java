@@ -1,12 +1,13 @@
 package org.marasm.neuromage.neural;
 
-import org.marasm.neuromage.math.Matrix;
-import org.marasm.neuromage.math.Vector;
+import sr3u.jvec.Matrix;
+import sr3u.jvec.Vector;
 
 public class LearningLayer extends Layer {
     private Vector output;
     private Vector delta;
     private Vector input;
+    private Matrix nablaW;
 
     protected LearningLayer(int size, int inputSize,
                             ActivationFunction activationFunc, Matrix neurons) {
@@ -22,19 +23,20 @@ public class LearningLayer extends Layer {
         return output;
     }
 
-    //calculating error for learning using back propagation
+    // calculating error for learning using back propagation
     public void calculateError(Vector expectedOutput) {
         //delta = output * (1 - output) * (expectedOutput - output);
-        delta = math.mul(output, math.mul(math.sub(1, output), math.sub(expectedOutput, output)));
+        /* delta = math.mul(output, math.mul(math.sub(1, output), math.sub(expectedOutput, output)));*/
+        final Vector dSigmaOut = getActivationFunc().applyDerivative(output);
+        delta = output.sub(expectedOutput).mul(dSigmaOut);
+        nablaW = delta.asColumn().mul(input.asRow());
     }
 
     public void calculateError(LearningLayer nextLayer) {
-        //for calculating the error for hidden neurons use the values of errors of next layer
-        //error_i = OUTi*(1 - OUTi)*(sum_children)
-        //sum_children = summary (weights(i->j)*error_j), j - all neurons of the next layer
-        Matrix nextLayerNeurons = nextLayer.getNeurons();
-        Vector sum = nextLayerNeurons.transpose().mul(nextLayer.getDelta()).sumRows();
-        delta = math.mul(math.mul(output, math.sub(1, output)), sum);
+        final Vector dSigmaOut = getActivationFunc().applyDerivative(output);
+        final Matrix m = nextLayer.getNeurons().t().mul(nextLayer.getDelta().asColumn()).mul(dSigmaOut.asRow());
+        delta = math.vector(m.calculate().data());
+        nablaW = delta.asColumn().mul(input.asRow());
     }
 
     private Matrix getNeurons() {
@@ -47,9 +49,9 @@ public class LearningLayer extends Layer {
     }
 
     public void learn(double rate) {
-        //newW_i = oldW_i + LR*error*input_i
-        Matrix cross = math.cross(math.mul(rate, input), delta);
-        neurons = neurons.add(cross);
+        //w-(eta*nw)
+        Matrix n = neurons.sub(nablaW.mul(rate));
+        setNeurons(n);
     }
 
 }

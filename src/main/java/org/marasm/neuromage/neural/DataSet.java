@@ -1,7 +1,7 @@
 package org.marasm.neuromage.neural;
 
 import lombok.Getter;
-import org.marasm.neuromage.math.Vector;
+import sr3u.jvec.Vector;
 
 import java.util.List;
 import java.util.function.BiConsumer;

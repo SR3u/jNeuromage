@@ -13,6 +13,13 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.jocl/jocl -->
         <dependency>
@@ -29,6 +36,11 @@
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>20.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.SR3u</groupId>
+            <artifactId>jvec</artifactId>
+            <version>be94a8cff5</version>
         </dependency>
     </dependencies>
 

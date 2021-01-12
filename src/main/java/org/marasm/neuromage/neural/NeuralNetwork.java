@@ -1,6 +1,6 @@
 package org.marasm.neuromage.neural;
 
-import org.marasm.neuromage.math.Vector;
+import sr3u.jvec.Vector;
 
 import java.io.Serializable;
 import java.util.Arrays;

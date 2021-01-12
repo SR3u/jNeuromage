@@ -1,29 +1,29 @@
 package org.marasm.neuromage.neural;
 
-import org.marasm.neuromage.math.Matrix;
-import org.marasm.neuromage.math.Vector;
-import org.marasm.neuromage.math.VectorMath;
+import sr3u.jvec.Matrix;
+import sr3u.jvec.Vector;
+import sr3u.jvec.JMath;
 
 import java.io.Serializable;
 
 public class Layer implements Serializable {
 
-    protected final static VectorMath math = VectorMath.get();
+    protected final static JMath math = JMath.get();
     private final int inputSize;
     private final int size;
     protected Matrix neurons;
-    private final ActivationFunction activationFunc;
+    protected final ActivationFunction activationFunc;
 
     protected Layer(int size, int inputSize, ActivationFunction activationFunc) {
         this.activationFunc = activationFunc;
         this.size = size;
         this.inputSize = inputSize;
-        double[][] weights = new double[size][inputSize];
+        double[] weights = new double[size * inputSize];
         for (int i = 0; i < size; i++) {
             double[] e = randomWeights(inputSize).calculate().data();
-            weights[i] = e;
+            System.arraycopy(e, 0, weights, i * inputSize, e.length);
         }
-        neurons = math.matrix(size, inputSize);
+        neurons = math.matrix(new Matrix.Size(size, inputSize), weights);
     }
 
     private Vector randomWeights(int inputSize) {
@@ -34,22 +34,30 @@ public class Layer implements Serializable {
         return math.vector(weights);
     }
 
-    public VectorMath getMath() {
+    public JMath getMath() {
         return math;
     }
 
     public Vector output(Vector input) {
-        Vector inp = math.convert(input);
-        return math.vector(neurons.stream()
-                .mapToDouble(n -> activationFunc.applyAsDouble(n, inp)).toArray());
+        final Matrix mul = neurons.mul(input.asColumn());
+        final Vector vec = math.vec(mul.calculate().data());
+        return activationFunc.apply(vec);
     }
 
     public long getNeuronsCount() {
-        return neurons.rows();
+        return neurons.size().rows();
     }
 
     public LearningLayer learning() {
         return new LearningLayer(size, inputSize, activationFunc, neurons);
+    }
+
+    protected ActivationFunction getActivationFunc() {
+        return activationFunc;
+    }
+
+    protected void setNeurons(Matrix neurons) {
+        this.neurons = neurons;
     }
 
 }

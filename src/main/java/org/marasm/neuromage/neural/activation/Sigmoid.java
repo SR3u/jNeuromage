@@ -1,14 +1,25 @@
 package org.marasm.neuromage.neural.activation;
 
-import org.marasm.neuromage.math.Vector;
-import org.marasm.neuromage.math.VectorMath;
+import sr3u.jvec.Vector;
+import sr3u.jvec.JMath;
 import org.marasm.neuromage.neural.ActivationFunction;
 
 public class Sigmoid implements ActivationFunction {
-    private static final VectorMath math = VectorMath.get();
+    private static final JMath math = JMath.get();
 
     @Override
-    public double applyAsDouble(Vector weights, Vector input) {
-        return 1 / (1 + Math.exp(math.sum(math.mul(input, weights))));
+    public Vector apply(Vector v) {
+        final Vector minusV = math.vec().zeros(v.size()).sub(v);
+        final Vector ones = math.vec().ones(v.size());
+        final Vector add = ones.add(minusV.exp());
+        return ones.div(add);
     }
+
+    @Override
+    public Vector applyDerivative(Vector v) {
+        final Vector ones = math.vec().ones(v.size());
+        final Vector sigma = apply(v);
+        return sigma.mul(ones.sub(sigma));
+    }
+
 }

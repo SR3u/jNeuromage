@@ -1,9 +1,8 @@
 package org.marasm.neuromage;
 
-import org.marasm.neuromage.math.Vector;
-import org.marasm.neuromage.math.VectorMath;
-import org.marasm.neuromage.math.VectorMathHolder;
 import org.marasm.neuromage.neural.DataSet;
+import sr3u.jvec.JMath;
+import sr3u.jvec.Vector;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -15,7 +14,7 @@ import java.util.stream.IntStream;
 
 public class ImageDataSet extends DataSet {
 
-    private static final VectorMath math = VectorMathHolder.get();
+    private static final JMath math = JMath.get();
 
     private Dimension size;
 
