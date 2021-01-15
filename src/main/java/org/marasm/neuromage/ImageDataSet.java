@@ -45,7 +45,7 @@ public class ImageDataSet extends DataSet {
                 .mapToDouble(i -> i)
                 .mapToObj(y -> IntStream.range(0, image.getWidth())
                         .mapToDouble(i -> i)
-                        .mapToObj(x -> math.vector(x, y)).collect(Collectors.toList()))
+                        .mapToObj(x -> math.vector(x / image.getWidth(), y / image.getHeight())).collect(Collectors.toList()))
                 .flatMap(Collection::stream).collect(Collectors.toList());
         return of(image.getWidth(), image.getHeight(), inputs, outputs);
     }
@@ -57,8 +57,13 @@ public class ImageDataSet extends DataSet {
                 .forEach(i -> {
                     double[] in = getInputs().get(i).calculate().data();
                     double[] out = getOutputs().get(i).calculate().data();
-                    image.setRGB((int) in[0], (int) in[1],
-                            new Color((int) out[0] * 255, (int) out[1] * 255, (int) out[2] * 255).getRGB());
+                    int x = (int) (in[0] * size.getWidth())%((int) size.getWidth());
+                    int y = (int) (in[1] * size.getHeight())%((int) size.getHeight());
+                    int r = (int) (out[0] * 255);
+                    int g = (int) (out[1] * 255);
+                    int b = (int) (out[2] * 255);
+                    image.setRGB(x, y,
+                            new Color(r, g, b).getRGB());
                 });
         return image;
     }

@@ -2,9 +2,11 @@ package org.marasm.neuromage.neural;
 
 import sr3u.jvec.Vector;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class NeuralNetwork implements Serializable {
     private final List<Layer> layers;
@@ -21,6 +23,13 @@ public class NeuralNetwork implements Serializable {
 
     public NeuralNetwork(Layer... layers) {
         this(Arrays.asList(layers));
+        Layer layer = this.layers.get(0);
+        layer.setInputSize(layer.getSize());
+        for (int i = 1; i < this.layers.size(); i++) {
+            Layer prevLayer = this.layers.get(i - 1);
+            layer = this.layers.get(i);
+            layer.setInputSize(prevLayer.getSize());
+        }
     }
 
     public Vector output(Vector input) {
@@ -39,8 +48,8 @@ public class NeuralNetwork implements Serializable {
 
     public void learn(int epochs, double rate, DataSet dataSet) {
         for (int i = 0; i < epochs; i++) {
-            epoch = i;
             learn(rate, dataSet);
+            epoch++;
         }
     }
 
@@ -91,4 +100,27 @@ public class NeuralNetwork implements Serializable {
                 .neurons(layers.stream().mapToLong(Layer::getNeuronsCount).sum())
                 .build();
     }
+
+    public NeuralNetworkObj serializable() {
+        return new NeuralNetworkObj(epoch, layers.stream().map(Layer::serializable).collect(Collectors.toList()));
+    }
+
+    public static NeuralNetwork withSerializable(NeuralNetworkObj os) throws IOException {
+        return withSerializable(os, false);
+    }
+
+    public static NeuralNetwork withSerializable(NeuralNetworkObj os, boolean learning) {
+        NeuralNetwork neuralNetwork = new NeuralNetwork(os.getLayers().stream().map(Layer::withSerializable)
+                .map(l -> {
+                    if (learning) {
+                        return l.learning();
+                    } else {
+                        return l;
+                    }
+                }).collect(Collectors.toList()));
+        neuralNetwork.epoch = os.getEpoch();
+        return neuralNetwork;
+    }
+
+
 }

@@ -5,6 +5,7 @@ import org.marasm.neuromage.gui.ImageFrame;
 import org.marasm.neuromage.neural.DataSet;
 import org.marasm.neuromage.neural.Layers;
 import org.marasm.neuromage.neural.NeuralNetwork;
+import org.marasm.neuromage.neural.NeuralNetworkObj;
 import sr3u.jvec.JMath;
 import sr3u.jvec.Vector;
 
@@ -26,26 +27,38 @@ import java.util.stream.IntStream;
 
 public class Main {
 
+    //public static final File IMAGE_PATH = new File("Lenna.png");
+    public static final File IMAGE_PATH = new File("ChristmasTree.png");
+
     public static void main(String[] args) throws IOException {
-        Image ima = ImageIO.read(new File("Lenna.png"));
-        DataSet dataSet = ImageDataSet.of(ima);
+        Image ima = ImageIO.read(IMAGE_PATH);
+        ImageDataSet dataSet = ImageDataSet.of(ima);
+        imageFrame(dataSet.toImage(), "Original");
 
         NeuralNetwork neuralNetwork = getNeuralNetwork();
         //long start = new Date().getTime();
         final long[] last = {0};
         final int[] lastE = {0};
+
+        imageFrame(process(ima.getWidth(null), ima.getHeight(null), neuralNetwork).toImage(), "Processed before");
+
         neuralNetwork.setHandler((e, i, t) -> {
+            long current = new Date().getTime();
             if (e != lastE[0]) {
                 saveNeuralNetwork(neuralNetwork);
                 lastE[0] = e;
+                ImageDataSet processed = process(ima.getWidth(null), ima.getHeight(null), neuralNetwork);
+                BufferedImage out = processed.toImage();
+                imageFrame(out, "Processed " + e);
+                System.out.println("Learning: epoch: " + e + " iteraion: " + i + "/" + t);
+                last[0] = current;
             }
-            long current = new Date().getTime();
             if (current - last[0] > 30000) {
                 System.out.println("Learning: epoch: " + e + " iteraion: " + i + "/" + t);
                 last[0] = current;
             }
         });
-        neuralNetwork.learn(10, 0.01, dataSet);
+        neuralNetwork.learn(1000, 1E-4, dataSet);
         saveNeuralNetwork(neuralNetwork);
 
         ImageDataSet processed = process(ima.getWidth(null), ima.getHeight(null), neuralNetwork);
@@ -62,34 +75,49 @@ public class Main {
         try {
             FileInputStream fi = new FileInputStream("nn.nn");
             ObjectInputStream oi = new ObjectInputStream(fi);
-            return (NeuralNetwork) oi.readObject();
+            return NeuralNetwork.withSerializable((NeuralNetworkObj) oi.readObject(), true);
         } catch (Exception e) {
-           /* NeuralNetwork neuralNetwork = new NeuralNetwork(
-                    Layers.sum(2, 2),
-                    Layers.sigmoid(128, 2).learning(),
-                    Layers.sigmoid(1024, 128).learning(),
-                    Layers.sigmoid(1024, 1024).learning(),
-                    Layers.sigmoid(128, 1024).learning(),
-                    Layers.sigmoid(3, 128).learning()
-            );*/
             NeuralNetwork neuralNetwork = new NeuralNetwork(
-                    Layers.sum(2, 2),
-                    Layers.sigmoid(4, 2).learning(),
-                    Layers.sigmoid(3, 4).learning()
+                    Layers.sigmoid(2).learning(),
+                    Layers.sigmoid(1024).learning(),
+                    Layers.sigmoid(1024).learning(),
+                    Layers.sigmoid(3).learning()
             );
+
+            /*NeuralNetwork neuralNetwork = new NeuralNetwork(
+                    Layers.sum(2, 2),
+                    Layers.sigmoid(2, 2).learning(),
+                    Layers.sigmoid(2, 2).learning(),
+                    Layers.sigmoid(3, 2).learning()
+            );*/
+            /*NeuralNetwork neuralNetwork = new NeuralNetwork(
+                    Layers.sum(2).learning(),
+                    Layers.sigmoid(16).learning(),
+                    Layers.sigmoid(128).learning(),
+                    Layers.sigmoid(128).learning(),
+                    Layers.sigmoid(16).learning(),
+                    Layers.sigmoid(3).learning()
+            );*/
+           /* NeuralNetwork neuralNetwork = new NeuralNetwork(
+                    Layers.sum(2),
+                    Layers.sigmoid(2).learning(),
+                    Layers.sigmoid(2).learning(),
+                    Layers.sigmoid(3).learning()
+            );*/
             saveNeuralNetwork(neuralNetwork);
             return neuralNetwork;
         }
     }
 
     private static void saveNeuralNetwork(NeuralNetwork neuralNetwork) {
-        /*try {
+        try {
+
             FileOutputStream f = new FileOutputStream(new File("nn.nn"));
             ObjectOutputStream o = new ObjectOutputStream(f);
-            o.writeObject(neuralNetwork);
+            o.writeObject(neuralNetwork.serializable());
         } catch (Exception e) {
             e.printStackTrace();
-        }*/
+        }
     }
 
     private static ImageDataSet process(int width, int height, NeuralNetwork neuralNetwork) {
@@ -98,7 +126,7 @@ public class Main {
                 .mapToDouble(i -> i)
                 .mapToObj(y -> IntStream.range(0, height)
                         .mapToDouble(i -> i)
-                        .mapToObj(x -> math.vector(x, y)).collect(Collectors.toList()))
+                        .mapToObj(x -> math.vector(((double) x) / width, ((double) y) / height)).collect(Collectors.toList()))
                 .flatMap(Collection::stream).collect(Collectors.toList());
 
         List<Vector> outputs = new ArrayList<>(width * height);

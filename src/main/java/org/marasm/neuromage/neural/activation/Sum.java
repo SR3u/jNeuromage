@@ -1,5 +1,6 @@
 package org.marasm.neuromage.neural.activation;
 
+import sr3u.jvec.Matrix;
 import sr3u.jvec.Vector;
 import sr3u.jvec.JMath;
 import org.marasm.neuromage.neural.ActivationFunction;
@@ -15,7 +16,17 @@ public class Sum implements ActivationFunction {
 
     @Override
     public Vector applyDerivative(Vector v) {
-        return math.vec().zeros(v.size());
+        return math.vec().ones(v.size());
+    }
+
+    @Override
+    public Matrix apply(Matrix v) {
+        return v;
+    }
+
+    @Override
+    public Matrix applyDerivative(Matrix v) {
+        return math.matrix(v.size(), 1.0);
     }
 
 }

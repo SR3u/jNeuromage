@@ -40,7 +40,13 @@
         <dependency>
             <groupId>com.github.SR3u</groupId>
             <artifactId>jvec</artifactId>
-            <version>be94a8cff5</version>
+            <version>0.0.8</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.nd4j</groupId>
+            <artifactId>nd4j-native</artifactId>
+            <version>1.0.0-beta7</version>
         </dependency>
     </dependencies>
 
